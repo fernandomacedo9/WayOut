@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class Inventory : MonoBehaviour
 {
@@ -96,7 +97,7 @@ public class Inventory : MonoBehaviour
         return false;
     }
 
-  
+
 
     public bool isUnlocked()
     {

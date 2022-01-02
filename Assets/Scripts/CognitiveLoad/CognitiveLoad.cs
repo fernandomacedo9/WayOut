@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
@@ -10,6 +11,26 @@ using UnityEngine.SceneManagement;
 
 public class CognitiveLoad : MonoBehaviour
 {
+	[DllImport ("SecondaryTaskPlugin")] private static extern void RegisterPlugin();
+
+    [DllImport ("SecondaryTaskPlugin")] private static extern void initializeSecondaryTaskWithStimulusHandler(IntPtr signalHandler, IntPtr stopSignalHandler, IntPtr debugHandler);
+
+    [DllImport ("SecondaryTaskPlugin")] private static extern void startMeasurement();
+
+    [DllImport ("SecondaryTaskPlugin")]  private static extern void stopMeasurement();
+
+    [DllImport ("SecondaryTaskPlugin")]  private static extern void respondToStimulus();
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate void RespondToStimulusDelegate();
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate void stopStimulusDelegate();
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate void DebugLogDelegate(string message);
+
+    public ParticleSystem smokeVisualStimulus;
+    public GameObject defaultVisualStimulus;
+    public Camera smokeCamera;
+    private bool shouldStartSmoke = false;
+    private bool shouldStopSmoke = false;
+    private bool isSmokePlaying = false;
 
     private List<Attention> attentionCatchers = new List<Attention>();
 
@@ -76,6 +97,20 @@ public class CognitiveLoad : MonoBehaviour
     private float timesSent = 0;
 
 
+    #region Singleton
+    public static CognitiveLoad instance;
+
+    void Awake()
+    {
+        if (instance != null)
+        {
+            Debug.LogWarning("More than one instance of CognitiveLoad found.");
+        }
+        instance = this;
+    }
+
+    #endregion
+
 
     void Start()
     {
@@ -84,13 +119,84 @@ public class CognitiveLoad : MonoBehaviour
 
         playerActive = false;
         activeTime = 0;
+
+        if(smokeVisualStimulus) {
+            smokeVisualStimulus.Stop();
+            smokeCamera.enabled = false;
+        } else {
+            defaultVisualStimulus.SetActive(false);
+        }
+        RespondToStimulusDelegate callback_delegate = new RespondToStimulusDelegate(engageStimulus);
+        IntPtr callbackPtr = Marshal.GetFunctionPointerForDelegate(callback_delegate);
+
+        stopStimulusDelegate stop_callback_delegate = new stopStimulusDelegate(stopStimulus);
+        IntPtr stopCallbackPtr = Marshal.GetFunctionPointerForDelegate(stop_callback_delegate);
+
+        DebugLogDelegate debug_callback_delegate = new DebugLogDelegate(debugLog);
+        IntPtr debugCallbackPtr = Marshal.GetFunctionPointerForDelegate(debug_callback_delegate);
+
+        initializeSecondaryTaskWithStimulusHandler(callbackPtr, stopCallbackPtr, debugCallbackPtr);
+        startMeasurement();
+    }
+
+    public void engageStimulus() {
+        instance.startSmoke();
+    }
+    public void stopStimulus() {
+        instance.stopSmoke();
+    }
+
+    public void startSmoke() {
+        shouldStartSmoke = true;
+    }
+
+    public void stopSmoke() {
+        shouldStopSmoke = true;
+    }
+
+    public void debugLog(string message) {
+       Debug.Log(message);
+    }
+
+    void OnApplicationQuit() {
+        stopMeasurement();
     }
 
     // Update is called once per frame
     void Update()
     {
-  
+        if(shouldStartSmoke) {
+            if(smokeVisualStimulus) {
+                smokeVisualStimulus.Play();
+                if(AreInterfacesOpen()) {
+                    smokeCamera.enabled = true;
+                }
+            } else {
+                defaultVisualStimulus.SetActive(true);
+            }
+            shouldStartSmoke = false;
+            isSmokePlaying = true;
+        } else if(shouldStopSmoke) {
+            if(smokeVisualStimulus) {
+                smokeVisualStimulus.Stop();
+                smokeCamera.enabled = false;
+            } else {
+                defaultVisualStimulus.SetActive(false);
+            }
+            shouldStopSmoke = false;
+            isSmokePlaying = false;
+        }
 
+        if (Input.GetKeyDown("space") && isSmokePlaying) {
+            respondToStimulus();
+            if(smokeVisualStimulus) {
+                smokeVisualStimulus.Stop();
+                smokeCamera.enabled = false;
+            } else {
+                defaultVisualStimulus.SetActive(false);
+            }
+            isSmokePlaying = false;
+        }
 
         if(!gameObject.GetComponent<Menu>().hasFinished())
             currentTime += Time.deltaTime;
