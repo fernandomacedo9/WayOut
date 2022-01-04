@@ -35,6 +35,7 @@ public class CognitiveLoad : MonoBehaviour
     private bool shouldStartSmoke = false;
     private bool shouldStopSmoke = false;
     private bool isSmokePlaying = false;
+    private String reactionTimes;
 
     private List<Attention> attentionCatchers = new List<Attention>();
 
@@ -397,12 +398,13 @@ public class CognitiveLoad : MonoBehaviour
      */
     public void triggerFirstPuzzle(bool state)
     {
-        if (state)
+        if (state) {
             FirstPuzzleStart = currentTime;
-        else if (!state)
+            addMilestone();
+        } else if (!state) {
             FirstPuzzleEnd = currentTime;
+        }
         Debug.Log("1st START: " + FirstPuzzleStart + "     END: " + FirstPuzzleEnd);
-
     }
     public void addLeverInteraction()
     {
@@ -414,10 +416,15 @@ public class CognitiveLoad : MonoBehaviour
      */
     public void triggerSecondPuzzle(bool state)
     {
-        if (state)
+        if (state) {
             SecondPuzzleStart = currentTime;
-        else if (!state)
+            addMilestone();
+        } else if (!state) {
             SecondPuzzleEnd = currentTime;
+
+            reactionTimes = exportData();
+            stopMeasurement();
+        }
         Debug.Log("2nd START: " + SecondPuzzleStart + "     END: " + SecondPuzzleEnd);
     }
     public void addOrbInteraction()
@@ -480,8 +487,6 @@ public class CognitiveLoad : MonoBehaviour
 
             String difficulty = SceneManager.GetActiveScene().name;
 
-
-
             attentionTime += timeSpentInteractingWithObjects;
 
             if (sendResultsButton.GetComponent<CanvasGroup>().alpha == 1)
@@ -495,7 +500,7 @@ public class CognitiveLoad : MonoBehaviour
                                                             numberOfNotificationsShown, timeNotificationsWereOnScreen,
                                                             FirstPuzzleStart, numberOfLevers, FirstPuzzleEnd,
                                                             SecondPuzzleStart, numberOfOrbs, timeOrbSelectionWasOnScreen, SecondPuzzleEnd,
-                                                            MoveInteractInterfaceNoti, InteractInterfaceNoti);
+                                                            MoveInteractInterfaceNoti, InteractInterfaceNoti, reactionTimes);
 
             }
 
@@ -528,6 +533,7 @@ public class CognitiveLoad : MonoBehaviour
                   "Number of SPs interacted: " + numberOfOrbs + "\n" +
                   "Total Time OrbSelection were on screen: " + timeOrbSelectionWasOnScreen + "\n" +
                   "Second Puzzle End: " + SecondPuzzleEnd + "\n" +
+                  "Reaction Times: " + reactionTimes + "\n" +
                   "\n");
 
             timesSent++;
