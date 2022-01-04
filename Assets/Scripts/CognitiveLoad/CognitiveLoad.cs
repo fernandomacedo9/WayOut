@@ -21,6 +21,10 @@ public class CognitiveLoad : MonoBehaviour
 
     [DllImport ("SecondaryTaskPlugin")]  private static extern void respondToStimulus();
 
+    [DllImport ("SecondaryTaskPlugin")]  private static extern void addMilestone();
+
+    [DllImport ("SecondaryTaskPlugin")]  private static extern string exportData();
+
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate void RespondToStimulusDelegate();
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate void stopStimulusDelegate();
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate void DebugLogDelegate(string message);
