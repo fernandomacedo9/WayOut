@@ -85,6 +85,7 @@ public class Menu : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.Escape))
         {
+            Screen.fullScreen = !Screen.fullScreen;
             closeInstructions();
         }
     }

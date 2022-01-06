@@ -33,11 +33,11 @@ public class Loader : MonoBehaviour
         string[] lastLine = data.Split('\n');
         string[] lastMode = lastLine[lastLine.Length - 1].Split(',');
 
-       Debug.Log(lastLine[lastLine.Length - 1]);
+        Debug.Log(lastLine[lastLine.Length - 1]);
         Debug.Log(lastMode[1]);
 
         
-        if (!lastMode[1].Equals("Difficulty ") && !lastMode[1].Equals(""))
+        if (!lastMode[1].Equals("Difficulty") && !lastMode[1].Equals(""))
         {
             //Debug.Log("Wasn't empty");
             GetComponent<Menu>().setDifficulty(lastMode[1]);
@@ -48,7 +48,7 @@ public class Loader : MonoBehaviour
          * When the Google Sheets is empty.
          */
          
-        else if (lastMode[1].Equals("Difficulty ") || lastMode[1].Equals(""))
+        else if (lastMode[1].Equals("Difficulty") || lastMode[1].Equals(""))
         {
             Debug.Log(" ><<<<<< Was empty");
            // GetComponent<Menu>().setDifficulty("B1");

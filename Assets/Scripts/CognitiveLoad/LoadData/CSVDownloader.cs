@@ -6,7 +6,7 @@ using UnityEngine.Networking;
 
 public static class CSVDownloader
 {
-    private const string k_googleSheetDocID = "1HaYpF-vabw5BWCmrnsagL6xfaFIIYwZ0tNmdEA1MzyU";
+    private const string k_googleSheetDocID = "11x2D8Iy7ake6SU02CYwMt33wyh8ZqQvxgca87aSGvxs";
     private const string url = "https://docs.google.com/spreadsheets/d/" + k_googleSheetDocID + "/export?format=csv";
 
     internal static IEnumerator DownloadData(System.Action<string> onCompleted)
