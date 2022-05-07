@@ -11,19 +11,47 @@ using UnityEngine.SceneManagement;
 
 public class CognitiveLoad : MonoBehaviour
 {
-	[DllImport ("SecondaryTaskPlugin")] private static extern void RegisterPlugin();
+#if (UNITY_IOS || UNITY_TVOS || UNITY_WEBGL) && !UNITY_EDITOR
+	[DllImport ("__Internal")]
+#else
+	[DllImport ("SecondaryTaskPlugin")]
+#endif
+        private static extern void initializeSecondaryTaskWithStimulusHandler(IntPtr signalHandler, IntPtr stopSignalHandler, IntPtr debugHandler);
 
-    [DllImport ("SecondaryTaskPlugin")] private static extern void initializeSecondaryTaskWithStimulusHandler(IntPtr signalHandler, IntPtr stopSignalHandler, IntPtr debugHandler);
+#if (UNITY_IOS || UNITY_TVOS || UNITY_WEBGL) && !UNITY_EDITOR
+	[DllImport ("__Internal")]
+#else
+	[DllImport ("SecondaryTaskPlugin")]
+#endif
+        private static extern void startMeasurement();
 
-    [DllImport ("SecondaryTaskPlugin")] private static extern void startMeasurement();
+#if (UNITY_IOS || UNITY_TVOS || UNITY_WEBGL) && !UNITY_EDITOR
+	[DllImport ("__Internal")]
+#else
+	[DllImport ("SecondaryTaskPlugin")]
+#endif
+        private static extern void stopMeasurement();
 
-    [DllImport ("SecondaryTaskPlugin")]  private static extern void stopMeasurement();
+#if (UNITY_IOS || UNITY_TVOS || UNITY_WEBGL) && !UNITY_EDITOR
+	[DllImport ("__Internal")]
+#else
+	[DllImport ("SecondaryTaskPlugin")]
+#endif
+        private static extern void respondToStimulus();
+        
+#if (UNITY_IOS || UNITY_TVOS || UNITY_WEBGL) && !UNITY_EDITOR
+	[DllImport ("__Internal")]
+#else
+	[DllImport ("SecondaryTaskPlugin")]
+#endif
+    private static extern void addMilestone();
 
-    [DllImport ("SecondaryTaskPlugin")]  private static extern void respondToStimulus();
-
-    [DllImport ("SecondaryTaskPlugin")]  private static extern void addMilestone();
-
-    [DllImport ("SecondaryTaskPlugin")]  private static extern string exportData();
+#if (UNITY_IOS || UNITY_TVOS || UNITY_WEBGL) && !UNITY_EDITOR
+	[DllImport ("__Internal")]
+#else
+	[DllImport ("SecondaryTaskPlugin")]
+#endif
+        private static extern string exportData();
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate void RespondToStimulusDelegate();
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate void stopStimulusDelegate();
