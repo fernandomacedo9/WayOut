@@ -31,7 +31,7 @@ public class Menu : MonoBehaviour
     public GameObject pauseButton;
 
 
-    private bool started = false, finish = false;
+    private bool started = false, finish = false, isGameOver = false;
 
     void Start()
     { 
@@ -225,7 +225,12 @@ public class Menu : MonoBehaviour
     */
     public void finishGame()
     {
+        finishGame(false);
+    }
+    public void finishGame(bool gameOver)
+    {
         finish = true;
+        isGameOver = gameOver;
         gameObject.GetComponent<CanInteract>().setCanInteract(false);
         menu.gameObject.SetActive(true);
         sendResults.GetComponent<CanvasGroup>().blocksRaycasts = true;
@@ -243,14 +248,24 @@ public class Menu : MonoBehaviour
     {
         yield return new WaitForSeconds(secs);
 
-        //i=4 So only the "Quit" button and "Thanks" message show up
-        for(int i=4;i<6;i++)
-        {
-            if (!displayMessages[i].gameObject.name.Equals("FullScreen"))
+        if(isGameOver) {
+            // in case of game over they are excluded and do not send results
+            // i=5 Thanks, i=7 Quit
+            StartCoroutine(FadeCanvasGroup(displayMessages[5], displayMessages[5].alpha, 1f));
+            StartCoroutine(FadeCanvasGroup(displayMessages[7], displayMessages[7].alpha, 1f));
+            quitButton.GetComponent<CanvasGroup>().interactable = true;
+            quitButton.GetComponent<CanvasGroup>().blocksRaycasts = true;
+        } else {
+            //i=4 So only the "Quit" button and "Thanks" message show up
+            for(int i=4;i<6;i++)
             {
-                // i=4 Send Results, i=5 Thanks
-                StartCoroutine(FadeCanvasGroup(displayMessages[i], displayMessages[i].alpha, 1f));
+                if (!displayMessages[i].gameObject.name.Equals("FullScreen"))
+                {
+                    // i=4 Send Results, i=5 Thanks
+                    StartCoroutine(FadeCanvasGroup(displayMessages[i], displayMessages[i].alpha, 1f));
+                }
             }
+            sendResults.GetComponent<CanvasGroup>().interactable = true;
         }
         Fade(imageFinal, 4f, 0f);
         mainCam.enabled = false;
@@ -258,7 +273,6 @@ public class Menu : MonoBehaviour
         finalCam.enabled = true;
         finish = true;
 
-        sendResults.GetComponent<CanvasGroup>().interactable = true;
         helpButton.gameObject.SetActive(false);
         helpButton.gameObject.GetComponent<Button>().interactable = false;
         pauseButton.gameObject.SetActive(false);

@@ -63,6 +63,8 @@ public class CognitiveLoad : MonoBehaviour
     private bool shouldStartSmoke = false;
     private bool shouldStopSmoke = false;
     private bool isSmokePlaying = false;
+    private bool hasResponded = false;
+    private bool updateLives = false;
     private String reactionTimes;
 
     private List<Attention> attentionCatchers = new List<Attention>();
@@ -176,7 +178,15 @@ public class CognitiveLoad : MonoBehaviour
         instance.startSmoke();
     }
     public void stopStimulus() {
+        instance.checkLives();
         instance.stopSmoke();
+    }
+
+    public void checkLives() {
+        if(!hasResponded) {
+            updateLives = true;
+        }
+        hasResponded = false;
     }
 
     public void startSmoke() {
@@ -220,7 +230,21 @@ public class CognitiveLoad : MonoBehaviour
             isSmokePlaying = false;
         }
 
+        if(updateLives) {
+            updateLives = false;
+            GameObject heatGauge = GameObject.Find("HeatGauge");
+            HeatGauge heatGaugeScript = heatGauge.GetComponent<HeatGauge>();
+            if(heatGaugeScript.lives == 1) {
+                stopMeasurement();
+                heatGauge.SetActive(false);
+                gameObject.GetComponent<Menu>().finishGame(true);
+            } else {
+                heatGaugeScript.lives -= 1;
+            }
+        }
+
         if (Input.GetKeyDown("space") && isSmokePlaying) {
+            hasResponded = true;
             respondToStimulus();
             if(smokeVisualStimulus) {
                 smokeVisualStimulus.Stop();
