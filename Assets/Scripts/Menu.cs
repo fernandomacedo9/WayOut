@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 
 
@@ -19,7 +20,8 @@ public class Menu : MonoBehaviour
     public Canvas menu;
     public Canvas notiCanvas;
     public Image fadeImgMenu, imageFinal;
-    public GameObject aboutUsText, instructions;
+    public GameObject aboutUsText, instructions, secondaryTaskTutorial;
+    public TextMeshProUGUI secondaryTaskTutorialText;
     public InputField inputCodeName;
     public GameObject fullScreen;
 
@@ -102,6 +104,30 @@ public class Menu : MonoBehaviour
         {
         if (started == false && startButton.GetComponent<CanvasGroup>().alpha == 1)
         {
+            foreach (CanvasGroup cg in displayMessages)
+            {
+                StartCoroutine(FadeCanvasGroup(cg, cg.alpha, 0f));
+            }
+            secondaryTaskTutorial.GetComponent<CanvasGroup>().interactable = true;
+            secondaryTaskTutorial.GetComponent<CanvasGroup>().blocksRaycasts = true;
+
+            string nextScene = NextScene();
+            if(nextScene == "A1" || nextScene == "A2") {
+                secondaryTaskTutorial.transform.GetChild(0).GetChild(1).gameObject.SetActive(true);
+                secondaryTaskTutorial.transform.GetChild(0).GetChild(2).gameObject.SetActive(false);
+                secondaryTaskTutorial.transform.GetChild(0).GetChild(3).gameObject.SetActive(true);
+                secondaryTaskTutorialText.text = "Occasionally the Golem's body might overheat, letting out some smoke, at which point you should press [space bar] as fast as you can.\nMiss it 3 times and the Golem will be destroyed, ending the game";
+            } else {
+                secondaryTaskTutorial.transform.GetChild(0).GetChild(1).gameObject.SetActive(false);
+                secondaryTaskTutorial.transform.GetChild(0).GetChild(2).gameObject.SetActive(true);
+                secondaryTaskTutorial.transform.GetChild(0).GetChild(3).gameObject.SetActive(false);
+                secondaryTaskTutorialText.text = "Occasionally a Red Marker will appear on screen, at which point you should press [space bar] as fast as you can.\nMiss it 3 times and it's game over";
+            }
+            StartCoroutine(FadeCanvasGroup(secondaryTaskTutorial.GetComponent<CanvasGroup>(), secondaryTaskTutorial.GetComponent<CanvasGroup>().alpha, 1f));
+        }
+    }
+
+    public void StartAfterTutorial() {
             startButton.interactable = false;
             aboutUsButton.interactable = false;
             foreach (CanvasGroup cg in displayMessages)
@@ -112,7 +138,6 @@ public class Menu : MonoBehaviour
             Fade(fadeImgMenu, 6f, 1f);
             initialCam.GetComponent<Animator>().Play("ChangePos");
             StartCoroutine(CoroutineBeginChangeScene(6f));
-        }
     }
 
 
@@ -144,17 +169,20 @@ public class Menu : MonoBehaviour
         startButton.gameObject.GetComponent<CanvasGroup>().interactable = false;
         startButton.gameObject.GetComponent<CanvasGroup>().blocksRaycasts = false;
 
+        string nextScene = NextScene();
+
+        GameObject.Find("ProgressSceneLoader").GetComponent<ProgressSceneLoader>().LoadScene(nextScene);
+    }
+
+    public string NextScene() {
         if (difficulty.Equals("A1"))
-            GameObject.Find("ProgressSceneLoader").GetComponent<ProgressSceneLoader>().LoadScene("A2");
+            return "A2";
         else if (difficulty.Equals("A2"))
-            GameObject.Find("ProgressSceneLoader").GetComponent<ProgressSceneLoader>().LoadScene("B1");
+            return "B1";
         else if (difficulty.Equals("B1"))
-            GameObject.Find("ProgressSceneLoader").GetComponent<ProgressSceneLoader>().LoadScene("B2");
-        else if (difficulty.Equals("B2"))
-            GameObject.Find("ProgressSceneLoader").GetComponent<ProgressSceneLoader>().LoadScene("A1");
-
-
-
+            return "B2";
+        else
+            return "A1";
     }
 
 
@@ -169,6 +197,8 @@ public class Menu : MonoBehaviour
             {
                 StartCoroutine(FadeCanvasGroup(cg, cg.alpha, 0f));
             }
+            secondaryTaskTutorial.GetComponent<CanvasGroup>().interactable = false;
+            secondaryTaskTutorial.gameObject.GetComponent<CanvasGroup>().blocksRaycasts = false;
             StartCoroutine(FadeCanvasGroup(aboutUsText.GetComponent<CanvasGroup>(), aboutUsText.GetComponent<CanvasGroup>().alpha, 1f));
         }
     }
