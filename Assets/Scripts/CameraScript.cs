@@ -6,6 +6,7 @@ public class CameraScript : MonoBehaviour
 {
 
     public Transform player, centerPoint;
+    public float cameraOffsetX = 0.0f;
     private Transform parent;
     private float mouseX, mouseY;     private float mouseSensivity = 6.75f;     public float cameraHeight;
 
@@ -49,6 +50,8 @@ public class CameraScript : MonoBehaviour
             transform.LookAt(centerPoint);
 
             centerPoint.position = new Vector3(player.position.x, player.position.y + cameraHeight, player.position.z);
+            Vector3 right = Vector3.Cross(Vector3.up, (player.position - transform.position)).normalized;
+            centerPoint.position = centerPoint.position + (right*cameraOffsetX);
             centerPoint.localRotation = Quaternion.Euler(mouseY, mouseX, 0);
 
             /*

@@ -59,12 +59,14 @@ public class CognitiveLoad : MonoBehaviour
 
     public ParticleSystem smokeVisualStimulus;
     public GameObject defaultVisualStimulus;
-    public Camera smokeCamera;
+    public AudioSource secondaryTaskSuccessAudio;
+    public AudioSource secondaryTaskFailAudio;
     private bool shouldStartSmoke = false;
     private bool shouldStopSmoke = false;
     private bool isSmokePlaying = false;
     private bool hasResponded = false;
     private bool updateLives = false;
+    private bool hasSeenFirstInstructions = false;
     private String reactionTimes;
 
     private List<Attention> attentionCatchers = new List<Attention>();
@@ -157,7 +159,6 @@ public class CognitiveLoad : MonoBehaviour
 
         if(smokeVisualStimulus) {
             smokeVisualStimulus.Stop();
-            smokeCamera.enabled = false;
         } else {
             defaultVisualStimulus.SetActive(false);
         }
@@ -171,7 +172,7 @@ public class CognitiveLoad : MonoBehaviour
         IntPtr debugCallbackPtr = Marshal.GetFunctionPointerForDelegate(debug_callback_delegate);
 
         initializeSecondaryTaskWithStimulusHandler(callbackPtr, stopCallbackPtr, debugCallbackPtr);
-        startMeasurement();
+        GameObject.Find("GameManager").GetComponent<Menu>().openInstructions();
     }
 
     public void engageStimulus() {
@@ -185,6 +186,8 @@ public class CognitiveLoad : MonoBehaviour
     public void checkLives() {
         if(!hasResponded) {
             updateLives = true;
+        } else {
+            secondaryTaskSuccessAudio.Play();
         }
         hasResponded = false;
     }
@@ -211,9 +214,6 @@ public class CognitiveLoad : MonoBehaviour
         if(shouldStartSmoke) {
             if(smokeVisualStimulus) {
                 smokeVisualStimulus.Play();
-                if(AreInterfacesOpen()) {
-                    smokeCamera.enabled = true;
-                }
             } else {
                 defaultVisualStimulus.SetActive(true);
             }
@@ -222,7 +222,6 @@ public class CognitiveLoad : MonoBehaviour
         } else if(shouldStopSmoke) {
             if(smokeVisualStimulus) {
                 smokeVisualStimulus.Stop();
-                smokeCamera.enabled = false;
             } else {
                 defaultVisualStimulus.SetActive(false);
             }
@@ -239,6 +238,7 @@ public class CognitiveLoad : MonoBehaviour
                 heatGauge.SetActive(false);
                 gameObject.GetComponent<Menu>().finishGame(true);
             } else {
+                secondaryTaskFailAudio.Play();
                 heatGaugeScript.lives -= 1;
             }
         }
@@ -248,7 +248,6 @@ public class CognitiveLoad : MonoBehaviour
             respondToStimulus();
             if(smokeVisualStimulus) {
                 smokeVisualStimulus.Stop();
-                smokeCamera.enabled = false;
             } else {
                 defaultVisualStimulus.SetActive(false);
             }
@@ -311,6 +310,10 @@ public class CognitiveLoad : MonoBehaviour
             helpWasClicked();
             stopCountingInstructionsInteractions = true;
         }else if (!instructions.activeSelf){
+            if(!hasSeenFirstInstructions) {
+                hasSeenFirstInstructions = true;
+                startMeasurement();
+            }
             stopCountingInstructionsInteractions = false;
         }
 

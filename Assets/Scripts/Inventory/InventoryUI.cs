@@ -47,6 +47,11 @@ public class InventoryUI : MonoBehaviour
             {
                 Notebook.SetActive(!Notebook.activeSelf);
             }
+            if(inventoryUI.activeSelf) {
+                GameObject.Find("GameManager").GetComponent<Menu>().adjustMainCameraForInventoryOpen();
+            } else {
+                GameObject.Find("GameManager").GetComponent<Menu>().adjustMainCameraForInventoryClose();
+            }
         }
 
         if (Input.GetKey(KeyCode.Escape))
@@ -57,6 +62,7 @@ public class InventoryUI : MonoBehaviour
             {
                 Notebook.SetActive(!Notebook.activeSelf);
             }
+            GameObject.Find("GameManager").GetComponent<Menu>().adjustMainCameraForInventoryClose();
         }
         
     }
@@ -65,6 +71,7 @@ public class InventoryUI : MonoBehaviour
     {
         if (Inventory.instance.isUnlocked())
         {
+            GameObject.Find("GameManager").GetComponent<Menu>().adjustMainCameraForInventoryClose();
             closeAllInfoImages();
             inventoryUI.SetActive(!inventoryUI.activeSelf);
             if (Notebook.activeSelf)
