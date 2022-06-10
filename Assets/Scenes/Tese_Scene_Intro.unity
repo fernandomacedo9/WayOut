@@ -8291,7 +8291,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0, y: 325}
+  m_AnchoredPosition: {x: 0, y: 300}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &386128977
@@ -9736,7 +9736,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 150, y: 325}
+  m_AnchoredPosition: {x: 150, y: 300}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &469782902
@@ -12639,7 +12639,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: -150, y: 325}
+  m_AnchoredPosition: {x: -150, y: 300}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &670445566
@@ -31366,8 +31366,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 45
-  m_fontSizeBase: 45
+  m_fontSize: 40
+  m_fontSizeBase: 40
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -40693,6 +40693,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 801758252}
   centerPoint: {fileID: 227371513}
+  cameraOffsetX: 0
   cameraHeight: 5
 --- !u!4 &1658727440
 Transform:
@@ -47498,7 +47499,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   smokeVisualStimulus: {fileID: 0}
   defaultVisualStimulus: {fileID: 0}
-  smokeCamera: {fileID: 0}
+  secondaryTaskSuccessAudio: {fileID: 0}
+  secondaryTaskFailAudio: {fileID: 0}
   inventory: {fileID: 0}
   notebook: {fileID: 0}
   instructions: {fileID: 0}

@@ -34,6 +34,7 @@ public class Menu : MonoBehaviour
 
 
     private bool started = false, finish = false, isGameOver = false;
+    private string debugMap = "";
 
     void Start()
     { 
@@ -41,6 +42,7 @@ public class Menu : MonoBehaviour
         {
             Loader load = GetComponent<Loader>();
             load.Load();
+            Screen.fullScreen = true;
         }
        
         displayMessages = new List<CanvasGroup>();
@@ -90,6 +92,16 @@ public class Menu : MonoBehaviour
             Screen.fullScreen = !Screen.fullScreen;
             closeInstructions();
         }
+
+        if (Input.GetKey(KeyCode.F5)) {
+            debugMap = "A1";
+        } else if (Input.GetKey(KeyCode.F6)) {
+            debugMap = "A2";
+        } else if (Input.GetKey(KeyCode.F7)) {
+            debugMap = "B1";
+        } else if (Input.GetKey(KeyCode.F8)) {
+            debugMap = "B2";
+        }
     }
 
 
@@ -127,12 +139,12 @@ public class Menu : MonoBehaviour
                 secondaryTaskTutorial.transform.GetChild(0).GetChild(1).gameObject.SetActive(true);
                 secondaryTaskTutorial.transform.GetChild(0).GetChild(2).gameObject.SetActive(false);
                 secondaryTaskTutorial.transform.GetChild(0).GetChild(3).gameObject.SetActive(true);
-                secondaryTaskTutorialText.text = "Due to the energy required to make your body move, occasionally you might overheat, letting out some smoke, at which point you should press [space bar] as fast as you can.\nMiss it 3 times and you will be destroyed, ending the game";
+                secondaryTaskTutorialText.text = "Due to the energy required to make your body move, occasionally you might overheat, letting out some smoke, at which point you should press [space bar] as fast as you can. Be careful to press [space bar] only when you see smoke or it could have a detrimental effect to you.\nMiss it 3 times and you will be destroyed, ending the game";
             } else {
                 secondaryTaskTutorial.transform.GetChild(0).GetChild(1).gameObject.SetActive(false);
                 secondaryTaskTutorial.transform.GetChild(0).GetChild(2).gameObject.SetActive(true);
                 secondaryTaskTutorial.transform.GetChild(0).GetChild(3).gameObject.SetActive(false);
-                secondaryTaskTutorialText.text = "For this thesis experiment you will be asked to respond to a stimulus(Red Marker) that will appear on the screen. When the Red Marker appears you should press [space bar] as fast as you can.\nIf you miss it 3 times it's game over";
+                secondaryTaskTutorialText.text = "For this thesis experiment you will be asked to respond to a stimulus(Red Marker) that will appear on the screen. When the Red Marker appears you should press [space bar] as fast as you can. Be careful to press [space bar] only when you see the Marker or it could have a detrimental effect to you.\nIf you miss it 3 times it's game over";
             }
             StartCoroutine(FadeCanvasGroup(secondaryTaskTutorial.GetComponent<CanvasGroup>(), secondaryTaskTutorial.GetComponent<CanvasGroup>().alpha, 1f));
     }
@@ -185,6 +197,10 @@ public class Menu : MonoBehaviour
     }
 
     public string NextScene() {
+        if(!debugMap.Equals("")) {
+            return debugMap;
+        }
+
         if (difficulty.Equals("A1"))
             return "A2";
         else if (difficulty.Equals("A2"))
@@ -298,25 +314,20 @@ public class Menu : MonoBehaviour
         yield return new WaitForSeconds(secs);
 
         if(isGameOver) {
-            // in case of game over they are excluded and do not send results
-            // i=5 Thanks, i=7 Quit i=8 GameOverText
-            StartCoroutine(FadeCanvasGroup(displayMessages[5], displayMessages[5].alpha, 1f));
-            StartCoroutine(FadeCanvasGroup(displayMessages[7], displayMessages[7].alpha, 1f));
+            //i=8 GameOverText
             StartCoroutine(FadeCanvasGroup(displayMessages[8], displayMessages[8].alpha, 1f));
-            quitButton.GetComponent<CanvasGroup>().interactable = true;
-            quitButton.GetComponent<CanvasGroup>().blocksRaycasts = true;
-        } else {
-            //i=4 So only the "Quit" button and "Thanks" message show up
-            for(int i=4;i<6;i++)
-            {
-                if (!displayMessages[i].gameObject.name.Equals("FullScreen"))
-                {
-                    // i=4 Send Results, i=5 Thanks
-                    StartCoroutine(FadeCanvasGroup(displayMessages[i], displayMessages[i].alpha, 1f));
-                }
-            }
-            sendResults.GetComponent<CanvasGroup>().interactable = true;
         }
+        
+            //i=4 So only the "Quit" button and "Thanks" message show up
+        for(int i=4;i<6;i++) {
+            if (!displayMessages[i].gameObject.name.Equals("FullScreen"))
+            {
+                // i=4 Send Results, i=5 Thanks
+                StartCoroutine(FadeCanvasGroup(displayMessages[i], displayMessages[i].alpha, 1f));
+            }
+        }
+        sendResults.GetComponent<CanvasGroup>().interactable = true;
+
         Fade(imageFinal, 4f, 0f);
         mainCam.enabled = false;
         initialCam.enabled = false;
@@ -356,10 +367,13 @@ public class Menu : MonoBehaviour
                     }
                     for (int i = 6; i < displayMessages.Count; i++)
                     {
-                       StartCoroutine(FadeCanvasGroup(displayMessages[i], displayMessages[i].alpha, 1f));
-                       displayMessages[i].blocksRaycasts = true;
-                       displayMessages[i].interactable = true;
-        
+                        if (!displayMessages[i].gameObject.name.Equals("OverHeatEnd")) {
+                            StartCoroutine(FadeCanvasGroup(displayMessages[i], displayMessages[i].alpha, 1f));
+                            displayMessages[i].blocksRaycasts = true;
+                            displayMessages[i].interactable = true;
+                        } else {
+                            StartCoroutine(FadeCanvasGroup(displayMessages[i], displayMessages[i].alpha, 0f));
+                        }
                     }
             inputCodeName.text = codeName;
     }

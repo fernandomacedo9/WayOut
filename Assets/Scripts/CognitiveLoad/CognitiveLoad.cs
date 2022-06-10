@@ -45,13 +45,27 @@ public class CognitiveLoad : MonoBehaviour
 	[DllImport ("SecondaryTaskPlugin")]
 #endif
     private static extern void addMilestone();
+        
+#if (UNITY_IOS || UNITY_TVOS || UNITY_WEBGL) && !UNITY_EDITOR
+	[DllImport ("__Internal")]
+#else
+	[DllImport ("SecondaryTaskPlugin")]
+#endif
+    private static extern void addEventLog(char[] eventName);
 
 #if (UNITY_IOS || UNITY_TVOS || UNITY_WEBGL) && !UNITY_EDITOR
 	[DllImport ("__Internal")]
 #else
 	[DllImport ("SecondaryTaskPlugin")]
 #endif
-        private static extern string exportData();
+        private static extern string exportReactionData();
+
+#if (UNITY_IOS || UNITY_TVOS || UNITY_WEBGL) && !UNITY_EDITOR
+	[DllImport ("__Internal")]
+#else
+	[DllImport ("SecondaryTaskPlugin")]
+#endif
+        private static extern string exportEventsData();
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate void RespondToStimulusDelegate();
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)] public delegate void stopStimulusDelegate();
@@ -67,7 +81,9 @@ public class CognitiveLoad : MonoBehaviour
     private bool hasResponded = false;
     private bool updateLives = false;
     private bool hasSeenFirstInstructions = false;
-    private String reactionTimes;
+    private String reactionTimes = "[]";
+    private String eventsLog = "[]";
+    private bool shouldPenalizeNextWrongReactionTime = false;
 
     private List<Attention> attentionCatchers = new List<Attention>();
 
@@ -85,18 +101,21 @@ public class CognitiveLoad : MonoBehaviour
     //INVENTORY RELATED
     public GameObject inventory;
     int timesInventoryOpened = 0;
+    private bool wasInventoryOpened = false;
     float timeSpentCheckingInventory = 0;
 
     //NOTEBOOK RELATED
     public GameObject notebook;
     bool stopCountingNotebookInteractions = false;
     int timesNotebookOpened = 0;
+    private bool wasNotebookOpened = false;
     float timeSpentCheckingNotebook = 0;
 
     //INSTRUCTIONS/HELP RELATED
     public GameObject instructions;
     bool stopCountingInstructionsInteractions = false;
     int timesInstructionsOpened = 0;
+    private bool wasInstructionOpened = false;
     float timeSpentCheckingInstructions = 0;
 
     //OBJECTS INTERACTED WITH RELATED
@@ -106,6 +125,7 @@ public class CognitiveLoad : MonoBehaviour
 
     //NOTIFICATIONS RELATED
     int numberOfNotificationsShown = 0;
+    private bool wasNotiOpened = false;
     float timeNotificationsWereOnScreen = 0;
     float attentionByNoti = 0;
 
@@ -122,6 +142,7 @@ public class CognitiveLoad : MonoBehaviour
     public float SecondPuzzleEnd = 0;
     public GameObject orbSelection;
     public float timeOrbSelectionWasOnScreen = 0;
+    private bool wasOrbMenuOpened = false;
 
     private float MoveInteractInterfaceNoti = 0;
     private float InteractInterfaceNoti = 0;
@@ -229,11 +250,36 @@ public class CognitiveLoad : MonoBehaviour
             isSmokePlaying = false;
         }
 
+        if (Input.GetKeyDown("space")) {
+            if(isSmokePlaying) {
+                shouldPenalizeNextWrongReactionTime = false;
+                hasResponded = true;
+                respondToStimulus();
+                if(smokeVisualStimulus) {
+                    smokeVisualStimulus.Stop();
+                } else {
+                    defaultVisualStimulus.SetActive(false);
+                }
+                isSmokePlaying = false;
+            } else {
+                if(shouldPenalizeNextWrongReactionTime) {
+                    updateLives = true;
+                    shouldPenalizeNextWrongReactionTime = false;
+                } else {
+                    shouldPenalizeNextWrongReactionTime = true;
+                }
+            }
+        }
+
         if(updateLives) {
             updateLives = false;
             GameObject heatGauge = GameObject.Find("HeatGauge");
             HeatGauge heatGaugeScript = heatGauge.GetComponent<HeatGauge>();
             if(heatGaugeScript.lives == 1) {
+                reactionTimes = exportReactionData();
+                reactionTimes += "[DNF]";
+                eventsLog = exportEventsData();
+                eventsLog += "[DNF]";
                 stopMeasurement();
                 heatGauge.SetActive(false);
                 gameObject.GetComponent<Menu>().finishGame(true);
@@ -241,17 +287,6 @@ public class CognitiveLoad : MonoBehaviour
                 secondaryTaskFailAudio.Play();
                 heatGaugeScript.lives -= 1;
             }
-        }
-
-        if (Input.GetKeyDown("space") && isSmokePlaying) {
-            hasResponded = true;
-            respondToStimulus();
-            if(smokeVisualStimulus) {
-                smokeVisualStimulus.Stop();
-            } else {
-                defaultVisualStimulus.SetActive(false);
-            }
-            isSmokePlaying = false;
         }
 
         if(!gameObject.GetComponent<Menu>().hasFinished())
@@ -376,10 +411,19 @@ public class CognitiveLoad : MonoBehaviour
      * INVENTORY INTERACTIONS
      */
     public bool isInventoryOpen(){
-        if (inventory.activeSelf)
+        if (inventory.activeSelf) {
+            if(!wasInventoryOpened) {
+                wasInventoryOpened = true;
+                addEventLog("InventoryOpened".ToCharArray());
+            }
             return true;
-        else
+        } else {
+            if(wasInventoryOpened) {
+                wasInventoryOpened = false;
+                addEventLog("InventoryClosed".ToCharArray());
+            }
             return false;
+        }
     }
     public void InventoryWasOpened(){
         timesInventoryOpened++;
@@ -389,10 +433,20 @@ public class CognitiveLoad : MonoBehaviour
      * NOTEBOOK INTERACTIONS
      */
     public bool isNotebookOpen(){
-        if (notebook.activeSelf)
+        if (notebook.activeSelf) {
+            if(!wasNotebookOpened) {
+                wasNotebookOpened = true;
+                addEventLog("NotebookOpened".ToCharArray());
+            }
             return true;
-        else
+        }
+        else {
+            if(wasNotebookOpened) {
+                wasNotebookOpened = false;
+                addEventLog("NotebookClosed".ToCharArray());
+            }
             return false;
+        }
     }
     public void notebookWasOpened()
     {
@@ -405,10 +459,20 @@ public class CognitiveLoad : MonoBehaviour
      * INSTRUCTIONS INTERACTIONS
      */
     public bool areInstructionsOpened(){
-        if (instructions.activeSelf)
+        if (instructions.activeSelf) {
+            if(!wasInstructionOpened) {
+                wasInstructionOpened = true;
+                addEventLog("InstructionsOpened".ToCharArray());
+            }
             return true;
-        else
+        }
+        else {
+            if(wasInstructionOpened) {
+                wasInstructionOpened = false;
+                addEventLog("InstructionsClosed".ToCharArray());
+            }
             return false;
+        }
     }
 
     public void helpWasClicked(){
@@ -420,6 +484,7 @@ public class CognitiveLoad : MonoBehaviour
      */
      public void addInteraction(){
         numberOfObjectInteractions++;
+        addEventLog("ObjectInteraction".ToCharArray());
      }
     public void setInteractionActive(bool state)
     {
@@ -434,6 +499,8 @@ public class CognitiveLoad : MonoBehaviour
     public void addNotification()
     {
         numberOfNotificationsShown++;
+        wasNotiOpened = true;
+        addEventLog("NotificationShown".ToCharArray());
     }
 
     public void setNotiActive(bool state)
@@ -443,6 +510,11 @@ public class CognitiveLoad : MonoBehaviour
         {
             attentionTime += attentionByNoti;
             attentionByNoti = 0;
+
+            if(wasNotiOpened) {
+                wasNotiOpened = false;
+                addEventLog("NotificationRemoved".ToCharArray());
+            }
         }
 
     }
@@ -477,7 +549,8 @@ public class CognitiveLoad : MonoBehaviour
         } else if (!state) {
             SecondPuzzleEnd = currentTime;
 
-            reactionTimes = exportData();
+            reactionTimes = exportReactionData();
+            eventsLog = exportEventsData();
             stopMeasurement();
         }
         Debug.Log("2nd START: " + SecondPuzzleStart + "     END: " + SecondPuzzleEnd);
@@ -490,10 +563,19 @@ public class CognitiveLoad : MonoBehaviour
 
     public bool IsOrbSelectionOpen()
     {
-        if (orbSelection.activeSelf)
+        if (orbSelection.activeSelf){
+            if(!wasOrbMenuOpened) {
+                wasOrbMenuOpened = true;
+                addEventLog("OrbMenuOpened".ToCharArray());
+            }
             return true;
-        else
+        } else {
+            if(wasOrbMenuOpened) {
+                wasOrbMenuOpened = false;
+                addEventLog("OrbMenuClosed".ToCharArray());
+            }
             return false;
+        }
     }
 
     /*
@@ -555,7 +637,7 @@ public class CognitiveLoad : MonoBehaviour
                                                             numberOfNotificationsShown, timeNotificationsWereOnScreen,
                                                             FirstPuzzleStart, numberOfLevers, FirstPuzzleEnd,
                                                             SecondPuzzleStart, numberOfOrbs, timeOrbSelectionWasOnScreen, SecondPuzzleEnd,
-                                                            MoveInteractInterfaceNoti, InteractInterfaceNoti, reactionTimes);
+                                                            MoveInteractInterfaceNoti, InteractInterfaceNoti, reactionTimes, eventsLog);
 
             }
 
@@ -589,6 +671,7 @@ public class CognitiveLoad : MonoBehaviour
                   "Total Time OrbSelection were on screen: " + timeOrbSelectionWasOnScreen + "\n" +
                   "Second Puzzle End: " + SecondPuzzleEnd + "\n" +
                   "Reaction Times: " + reactionTimes + "\n" +
+                  "Events Log: " + eventsLog + "\n" +
                   "\n");
 
             timesSent++;
