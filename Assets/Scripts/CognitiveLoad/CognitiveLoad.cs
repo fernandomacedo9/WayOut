@@ -51,7 +51,7 @@ public class CognitiveLoad : MonoBehaviour
 #else
 	[DllImport ("SecondaryTaskPlugin")]
 #endif
-    private static extern void addEventLog(char[] eventName);
+    private static extern void addEventLog(string eventName);
 
 #if (UNITY_IOS || UNITY_TVOS || UNITY_WEBGL) && !UNITY_EDITOR
 	[DllImport ("__Internal")]
@@ -414,13 +414,13 @@ public class CognitiveLoad : MonoBehaviour
         if (inventory.activeSelf) {
             if(!wasInventoryOpened) {
                 wasInventoryOpened = true;
-                addEventLog("InventoryOpened".ToCharArray());
+                addEventLog("InventoryOpened");
             }
             return true;
         } else {
             if(wasInventoryOpened) {
                 wasInventoryOpened = false;
-                addEventLog("InventoryClosed".ToCharArray());
+                addEventLog("InventoryClosed");
             }
             return false;
         }
@@ -436,14 +436,14 @@ public class CognitiveLoad : MonoBehaviour
         if (notebook.activeSelf) {
             if(!wasNotebookOpened) {
                 wasNotebookOpened = true;
-                addEventLog("NotebookOpened".ToCharArray());
+                addEventLog("NotebookOpened");
             }
             return true;
         }
         else {
             if(wasNotebookOpened) {
                 wasNotebookOpened = false;
-                addEventLog("NotebookClosed".ToCharArray());
+                addEventLog("NotebookClosed");
             }
             return false;
         }
@@ -462,14 +462,14 @@ public class CognitiveLoad : MonoBehaviour
         if (instructions.activeSelf) {
             if(!wasInstructionOpened) {
                 wasInstructionOpened = true;
-                addEventLog("InstructionsOpened".ToCharArray());
+                addEventLog("InstructionsOpened");
             }
             return true;
         }
         else {
             if(wasInstructionOpened) {
                 wasInstructionOpened = false;
-                addEventLog("InstructionsClosed".ToCharArray());
+                addEventLog("InstructionsClosed");
             }
             return false;
         }
@@ -484,7 +484,7 @@ public class CognitiveLoad : MonoBehaviour
      */
      public void addInteraction(){
         numberOfObjectInteractions++;
-        addEventLog("ObjectInteraction".ToCharArray());
+        addEventLog("ObjectInteraction");
      }
     public void setInteractionActive(bool state)
     {
@@ -500,7 +500,7 @@ public class CognitiveLoad : MonoBehaviour
     {
         numberOfNotificationsShown++;
         wasNotiOpened = true;
-        addEventLog("NotificationShown".ToCharArray());
+        addEventLog("NotificationShown");
     }
 
     public void setNotiActive(bool state)
@@ -513,7 +513,7 @@ public class CognitiveLoad : MonoBehaviour
 
             if(wasNotiOpened) {
                 wasNotiOpened = false;
-                addEventLog("NotificationRemoved".ToCharArray());
+                addEventLog("NotificationRemoved");
             }
         }
 
@@ -566,13 +566,13 @@ public class CognitiveLoad : MonoBehaviour
         if (orbSelection.activeSelf){
             if(!wasOrbMenuOpened) {
                 wasOrbMenuOpened = true;
-                addEventLog("OrbMenuOpened".ToCharArray());
+                addEventLog("OrbMenuOpened");
             }
             return true;
         } else {
             if(wasOrbMenuOpened) {
                 wasOrbMenuOpened = false;
-                addEventLog("OrbMenuClosed".ToCharArray());
+                addEventLog("OrbMenuClosed");
             }
             return false;
         }
