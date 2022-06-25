@@ -144,7 +144,7 @@ public class Menu : MonoBehaviour
                 secondaryTaskTutorial.transform.GetChild(0).GetChild(1).gameObject.SetActive(false);
                 secondaryTaskTutorial.transform.GetChild(0).GetChild(2).gameObject.SetActive(true);
                 secondaryTaskTutorial.transform.GetChild(0).GetChild(3).gameObject.SetActive(false);
-                secondaryTaskTutorialText.text = "For this thesis experiment you will be asked to respond to a stimulus(Red Marker) that will appear on the screen. When the Red Marker appears you should press [space bar] as fast as you can. Be careful to press [space bar] only when you see the Marker or it could have a detrimental effect to you.\nIf you miss it 3 times it's game over";
+                secondaryTaskTutorialText.text = "You will be asked to respond to a stimulus(Red Marker) that will appear on the screen. When the Red Marker appears you should press [space bar] as fast as you can. Be careful to press [space bar] only when you see the Marker or it could have a detrimental effect to you.\nIf you miss it 3 times it's game over";
             }
             StartCoroutine(FadeCanvasGroup(secondaryTaskTutorial.GetComponent<CanvasGroup>(), secondaryTaskTutorial.GetComponent<CanvasGroup>().alpha, 1f));
     }
