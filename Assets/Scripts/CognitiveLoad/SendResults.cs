@@ -43,6 +43,8 @@ public class SendResults : MonoBehaviour
     public float InteractInterfaceNoti;
     public String reactionTimes;
     public String eventsLog;
+    public int numReactionEvents;
+    public int numReactionEventsResponded;
 
 
     private float timesSent = 0;
@@ -60,7 +62,7 @@ public class SendResults : MonoBehaviour
                      float firstPstart, float leversInteracted, float firstPend,
                      float secondPstart, float SPsInteracted, float timeOrbSelection, float secondPend,
                      float moveInteractInterfaceNoti, float interactInterfaceNoti, String reactionTimes, 
-                     String eventsLog, System.Action<string> onCompleted)
+                     String eventsLog, int numReactionEvents, int numReactionEventsResponded, System.Action<string> onCompleted)
                      {
             string BASE_URL = "https://docs.google.com/forms/u/0/d/e/1FAIpQLSc6WR15pdf-HG2DFItp80xhF7x73_xAeSTEhFSc_aplr-A6rw/formResponse";
 
@@ -101,6 +103,8 @@ public class SendResults : MonoBehaviour
             form.AddField("entry.571586739", string.Format("{0:N3}", interactInterfaceNoti));
             form.AddField("entry.955766916", reactionTimes);
             form.AddField("entry.691864212", eventsLog);
+            form.AddField("entry.812306391", numReactionEvents);
+            form.AddField("entry.1753300519", numReactionEventsResponded);
 
             timesSent ++;
 
@@ -130,7 +134,7 @@ public class SendResults : MonoBehaviour
                      float firstPstart, float leversInteracted, float firstPend,
                      float secondPstart, float SPsInteracted, float timeOrbSelection, float secondPend,
                      float moveInteractInterfaceNoti, float interactInterfaceNoti, String reactionTimes,
-                     String eventsLog)
+                     String eventsLog, int numReactionEvents, int numReactionEventsResponded)
     {
         
 
@@ -168,6 +172,8 @@ public class SendResults : MonoBehaviour
         this.InteractInterfaceNoti = interactInterfaceNoti;
         this.reactionTimes = reactionTimes;
         this.eventsLog = eventsLog;
+        this.numReactionEvents = numReactionEvents;
+        this.numReactionEventsResponded = numReactionEventsResponded;
 
 
         if (timesSent == 0)
@@ -180,7 +186,8 @@ public class SendResults : MonoBehaviour
                       nrNoti, timeNoti,
                       firstPstart, leversInteracted, firstPend,
                       secondPstart, SPsInteracted, timeOrbSelection, secondPend,
-                      moveInteractInterfaceNoti, interactInterfaceNoti, reactionTimes, eventsLog, AfterForm));
+                      moveInteractInterfaceNoti, interactInterfaceNoti, reactionTimes, eventsLog, 
+                      numReactionEvents, numReactionEventsResponded, AfterForm));
         }
 
     }
