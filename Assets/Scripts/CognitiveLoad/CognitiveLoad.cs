@@ -84,6 +84,8 @@ public class CognitiveLoad : MonoBehaviour
     private String reactionTimes = "[]";
     private String eventsLog = "[]";
     private bool shouldPenalizeNextWrongReactionTime = false;
+    private int numReactionEvents = 0;
+    private int numReactionEventsResponded = 0;
 
     private List<Attention> attentionCatchers = new List<Attention>();
 
@@ -209,12 +211,14 @@ public class CognitiveLoad : MonoBehaviour
             updateLives = true;
         } else {
             secondaryTaskSuccessAudio.Play();
+            numReactionEventsResponded += 1;
         }
         hasResponded = false;
     }
 
     public void startSmoke() {
         shouldStartSmoke = true;
+        numReactionEvents += 1;
     }
 
     public void stopSmoke() {
@@ -637,7 +641,8 @@ public class CognitiveLoad : MonoBehaviour
                                                             numberOfNotificationsShown, timeNotificationsWereOnScreen,
                                                             FirstPuzzleStart, numberOfLevers, FirstPuzzleEnd,
                                                             SecondPuzzleStart, numberOfOrbs, timeOrbSelectionWasOnScreen, SecondPuzzleEnd,
-                                                            MoveInteractInterfaceNoti, InteractInterfaceNoti, reactionTimes, eventsLog);
+                                                            MoveInteractInterfaceNoti, InteractInterfaceNoti, reactionTimes, eventsLog, 
+                                                            numReactionEvents, numReactionEventsResponded);
 
             }
 
@@ -672,6 +677,8 @@ public class CognitiveLoad : MonoBehaviour
                   "Second Puzzle End: " + SecondPuzzleEnd + "\n" +
                   "Reaction Times: " + reactionTimes + "\n" +
                   "Events Log: " + eventsLog + "\n" +
+                  "Number of Reaction Events: " + numReactionEvents + "\n" +
+                  "Number of Reaction Events Responded: " + numReactionEventsResponded + "\n" +
                   "\n");
 
             timesSent++;
