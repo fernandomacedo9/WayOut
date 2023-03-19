@@ -86,6 +86,8 @@ public class CognitiveLoad : MonoBehaviour
     private bool shouldPenalizeNextWrongReactionTime = false;
     private int numReactionEvents = 0;
     private int numReactionEventsResponded = 0;
+    private int numReactionEventsRespondedContinuous = 0;
+	private bool shouldRestoreLives = false;
 
     private List<Attention> attentionCatchers = new List<Attention>();
 
@@ -212,6 +214,17 @@ public class CognitiveLoad : MonoBehaviour
         } else {
             secondaryTaskSuccessAudio.Play();
             numReactionEventsResponded += 1;
+			
+			GameObject heatGauge = GameObject.Find("HeatGauge");
+			HeatGauge heatGaugeScript = heatGauge.GetComponent<HeatGauge>();
+            if(heatGaugeScript.lives < 3) {
+				if(numReactionEventsRespondedContinuous == 5) {
+					numReactionEventsRespondedContinuous = 0;	
+					shouldRestoreLives = true;
+				} else {
+					numReactionEventsRespondedContinuous += 1;
+				}
+			}
         }
         hasResponded = false;
     }
@@ -292,6 +305,14 @@ public class CognitiveLoad : MonoBehaviour
                 heatGaugeScript.lives -= 1;
             }
         }
+		if(shouldRestoreLives) {
+			shouldRestoreLives = false;
+			GameObject heatGauge = GameObject.Find("HeatGauge");
+			HeatGauge heatGaugeScript = heatGauge.GetComponent<HeatGauge>();
+            if(heatGaugeScript.lives < 3) {
+				heatGaugeScript.lives += 1;
+			}
+		}
 
         if(!gameObject.GetComponent<Menu>().hasFinished())
             currentTime += Time.deltaTime;
