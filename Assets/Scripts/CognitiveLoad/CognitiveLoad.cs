@@ -74,6 +74,7 @@ public class CognitiveLoad : MonoBehaviour
     public ParticleSystem smokeVisualStimulus;
     public GameObject defaultVisualStimulus;
     public AudioSource secondaryTaskSuccessAudio;
+    public AudioSource secondaryTaskLifeRecoverAudio;
     public AudioSource secondaryTaskFailAudio;
     private bool shouldStartSmoke = false;
     private bool shouldStopSmoke = false;
@@ -212,7 +213,6 @@ public class CognitiveLoad : MonoBehaviour
         if(!hasResponded) {
             updateLives = true;
         } else {
-            secondaryTaskSuccessAudio.Play();
             numReactionEventsResponded += 1;
 			
 			GameObject heatGauge = GameObject.Find("HeatGauge");
@@ -221,9 +221,13 @@ public class CognitiveLoad : MonoBehaviour
 				if(numReactionEventsRespondedContinuous == 5) {
 					numReactionEventsRespondedContinuous = 0;	
 					shouldRestoreLives = true;
+					secondaryTaskLifeRecoverAudio.Play();
 				} else {
 					numReactionEventsRespondedContinuous += 1;
+					secondaryTaskSuccessAudio.Play();
 				}
+			} else {
+				secondaryTaskSuccessAudio.Play();
 			}
         }
         hasResponded = false;
