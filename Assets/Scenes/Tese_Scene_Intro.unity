@@ -8287,7 +8287,7 @@ RectTransform:
   m_GameObject: {fileID: 386128975}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2, y: 2, z: 1}
+  m_LocalScale: {x: 1, y: 1.8, z: 1}
   m_Children: []
   m_Father: {fileID: 1580129078}
   m_RootOrder: 2
@@ -47503,6 +47503,7 @@ MonoBehaviour:
   smokeVisualStimulus: {fileID: 0}
   defaultVisualStimulus: {fileID: 0}
   secondaryTaskSuccessAudio: {fileID: 0}
+  secondaryTaskLifeRecoverAudio: {fileID: 0}
   secondaryTaskFailAudio: {fileID: 0}
   inventory: {fileID: 0}
   notebook: {fileID: 0}
