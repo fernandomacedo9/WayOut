@@ -3896,9 +3896,9 @@ MonoBehaviour:
     as a Golem who just woke up in a mysterious laboratory and is trying to figure
     out the purpose of his existance. You, as the Golem, will have to solve puzzles
     and challenges to progress through the laboratory and find clues about yourself.
+    Interact with objects around you with the left mouse button.
 
-    Good
-    Luck.'
+    Good Luck.'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: e64bb2a9fe06f486292d76ca383829d4, type: 2}
   m_sharedMaterial: {fileID: 21427771933546532, guid: e64bb2a9fe06f486292d76ca383829d4,
@@ -8294,7 +8294,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0, y: 300}
+  m_AnchoredPosition: {x: -120, y: 300}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &386128977
