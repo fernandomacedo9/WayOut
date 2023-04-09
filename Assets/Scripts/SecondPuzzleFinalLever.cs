@@ -37,7 +37,6 @@ public class SecondPuzzleFinalLever : MonoBehaviour
             GameObject.Find("LevelRelated").GetComponent<LevelRelated>().RemoveInteractibleLever();
         }
         */
-        closeRoomDoor();
     }
 
     public void closeMainDoor()
@@ -46,7 +45,6 @@ public class SecondPuzzleFinalLever : MonoBehaviour
         GameObject.Find("R").GetComponent<Animator>().Play("CloseR");
         //GameObject.Find("LevelRelated").GetComponent<LevelRelated>().increseNumberOfTimesOpen();
         mainDoorOpen = false;
-        openRoomDoor();
     }
 
     public void closeRoomDoor()
