@@ -37,7 +37,7 @@ public class CognitiveLoad : MonoBehaviour
 #else
 	[DllImport ("SecondaryTaskPlugin")]
 #endif
-        private static extern void respondToStimulus();
+        private static extern void respondToStimulus(string position);
         
 #if (UNITY_IOS || UNITY_TVOS || UNITY_WEBGL) && !UNITY_EDITOR
 	[DllImport ("__Internal")]
@@ -275,7 +275,7 @@ public class CognitiveLoad : MonoBehaviour
             if(isSmokePlaying) {
                 shouldPenalizeNextWrongReactionTime = false;
                 hasResponded = true;
-                respondToStimulus();
+                respondToStimulus(GameObject.Find("Player").transform.position.ToString());
                 if(smokeVisualStimulus) {
                     smokeVisualStimulus.Stop();
                 } else {
